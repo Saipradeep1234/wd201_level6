@@ -1,0 +1,7 @@
+body{
+    color: aqua;
+    font-family: 'Courier New', Courier, monospace;
+}
+table, th, td {
+    border:1px solid black;
+  }

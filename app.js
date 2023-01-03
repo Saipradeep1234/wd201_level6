@@ -2,14 +2,29 @@ const express = require("express");
 const app = express();
 const { Todo } = require("./models");
 const bodyParser = require("body-parser");
+const path=require("path");
 app.use(bodyParser.json());
-
-app.get("/", function (request, response) {
-  response.send("Hello World");
+app.set("view engine","ejs");
+app.get("/", async function (request, response) {
+  const allTodos=await Todo.getTodos();
+  if (request.accepts("html")){
+    response.render('index',{
+      allTodos
+    });
+  }else{
+    response.json({
+      allTodos
+    })
+  }
+});
+app.use(express.static(path.join(__dirname,'public'))); 
+// eslint-disable-next-line no-unused-vars
+app.get("/todos",async function (request, response) {
+  console.log("Todo list",request.body);
 });
 
 // eslint-disable-next-line no-unused-vars
-app.get("/todos", async function (_request, response) {
+app.get("/todos", async function (request, response) {
   console.log("Processing list of all Todos ...");
   // FILL IN YOUR CODE HERE
 
@@ -38,7 +53,9 @@ app.get("/todos/:id", async function (request, response) {
 
 app.post("/todos", async function (request, response) {
   try {
-    const todo = await Todo.addTodo(request.body);
+    const todo = await Todo.addTodo({
+      title: request.body.title,
+      dueDate:request.body.dueDate});
     return response.json(todo);
   } catch (error) {
     console.log(error);
@@ -59,8 +76,19 @@ app.put("/todos/:id/markAsCompleted", async function (request, response) {
 
 app.delete("/todos/:id", async function (request, response) {
   console.log("We have to delete a Todo with ID: ", request.params.id);
-  const Row = await Todo.destroy({ where: { id: request.params.id } });
-  response.send(Row ? true : false);
+  try{
+    const row= await Todo.destroy({
+      where: {
+        id: request.params.id
+      }
+    });
+    console.log(row);
+    return response.send(row == true);
+  }
+  catch (error) {
+    console.log(error);
+    return response.status(422).json(error);
+  }
 });
 
 module.exports = app;
