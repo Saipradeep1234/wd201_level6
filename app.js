@@ -6,14 +6,17 @@ const path=require("path");
 app.use(bodyParser.json());
 app.set("view engine","ejs");
 app.get("/", async function (request, response) {
+  const overdue = await Todo.overdue();
+  const duetoday = await Todo.dueToday();
+  const duelater = await Todo.dueLater();
   const allTodos=await Todo.getTodos();
   if (request.accepts("html")){
     response.render('index',{
-      allTodos
+      allTodos,overdue,duelater,duetoday
     });
   }else{
     response.json({
-      allTodos
+      allTodos,overdue,duelater,duetoday
     })
   }
 });
@@ -53,9 +56,7 @@ app.get("/todos/:id", async function (request, response) {
 
 app.post("/todos", async function (request, response) {
   try {
-    const todo = await Todo.addTodo({
-      title: request.body.title,
-      dueDate:request.body.dueDate});
+    const todo = await Todo.addTodo(request.body);
     return response.json(todo);
   } catch (error) {
     console.log(error);
