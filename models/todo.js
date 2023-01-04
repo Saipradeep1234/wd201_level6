@@ -1,20 +1,17 @@
 "use strict";
-const { Model,Op } = require("sequelize");
+const { Model, Op } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Todo extends Model {
+
     static associate(models) {
-      // define association here
     }
-    static getTodos(){
-      return this.findAll();
-    }
-    
-    static addTodo({ title, dueDate}) {
+
+    static addTodo({ title, dueDate }) {
       return this.create({ title: title, dueDate: dueDate, completed: false });
     }
 
-    markAsCompleted() {
-      return this.update({ completed: true });
+    static getTodos() {
+      return this.findAll();
     }
     static async overdue() {
       return await Todo.findAll({
@@ -25,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         order: [["id", "ASC"]],
       });
     }
-    static async dueToday(){
+    static async dueToday() {
       return await Todo.findAll({
         where: {
           dueDate: { [Op.eq]: new Date().toLocaleDateString("en-CA") },
@@ -43,6 +40,22 @@ module.exports = (sequelize, DataTypes) => {
         order: [["id", "ASC"]],
       });
     }
+
+    static async completedTodos() {
+      return await Todo.findAll({
+        where: { completed: true },
+      });
+    }
+    static async remove(id) {
+      return this.destroy({
+        where: {
+          id,
+        },
+      });
+    }
+    setCompletionStatus(completed) {
+      return this.update({ completed: completed });
+    }
   }
   Todo.init(
     {
@@ -57,3 +70,4 @@ module.exports = (sequelize, DataTypes) => {
   );
   return Todo;
 };
+
