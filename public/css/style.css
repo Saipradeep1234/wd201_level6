@@ -1,10 +1,13 @@
 body{
-    background-color: aqua;
-    font-family: 'Courier New', Courier, monospace;
+  background-color: aqua;
+  font-family: 'Courier New', Courier, monospace;
 }
 .Todo-Item:hover .trash-icon {
-    display: block;
-  }
+  display: block;
+}
 table, th, td {
-    border:1px solid blue;
-  }
+  border:1px solid black;
+}
+h5 {
+  display: inline;
+}
