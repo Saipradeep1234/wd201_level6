@@ -12,7 +12,7 @@ function extractCsrfToken(res) {
 describe("Todo test suite", () => {
   beforeAll(async () => {
     await db.sequelize.sync({ force: true });
-    server = app.listen(4000, () => {});
+    server = app.listen(4000, () => { });
     agent = request.agent(server);
   });
   afterAll(async () => {
@@ -62,7 +62,6 @@ describe("Todo test suite", () => {
       .send({
         _csrf: csrfToken,
       });
-
     const parsedUpdateResponse = JSON.parse(markCompleteResponse.text);
     parsedUpdateResponse.completed
       ? expect(parsedUpdateResponse.completed).toBe(true)
