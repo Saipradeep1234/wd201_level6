@@ -53,19 +53,26 @@ describe("Todo test suite", () => {
     const parsedGroupedResponse = JSON.parse(groupedTodosResponse.text);
     const dueTodayCount = parsedGroupedResponse.duetodaytodolist.length;
     const latestTodo = parsedGroupedResponse.duetodaytodolist[dueTodayCount - 1];
-
+    let completedstatus=true;
     res = await agent.get("/");
     csrfToken = extractCsrfToken(res);
-
-    const markCompleteResponse = await agent
-      .put(`/todos/${latestTodo.id}`)
-      .send({
-        _csrf: csrfToken,
-      });
-    const parsedUpdateResponse = JSON.parse(markCompleteResponse.text);
-    parsedUpdateResponse.completed
-      ? expect(parsedUpdateResponse.completed).toBe(true)
-      : expect(parsedUpdateResponse.completed).toBe(false);
+    var response=await agent.put(`/todos/${latestTodo.id}`).send({
+      _csrf: csrfToken,
+      completed: completedstatus,
+    });
+    console.log(response.text);
+    var newparsedUpdateResponse=JSON.parse(response.text);
+    expect(newparsedUpdateResponse.completed).toBe(true);
+    completedstatus=false;
+    res = await agent.get("/");
+    csrfToken = extractCsrfToken(res);
+    var response1=await agent.put(`/todos/${latestTodo.id}`).send({
+      _csrf: csrfToken,
+      completed: completedstatus,
+    });
+    console.log(response.text);
+    var newparsedUpdateResponse1=JSON.parse(response1.text);
+    expect(newparsedUpdateResponse1.completed).toBe(false);
   });
 
   test("Deletes a todo with the given ID if it exists and sends a boolean response", async () => {
